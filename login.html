@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    
+    <title>Login — Innovation 2K26</title>
+    <link rel="icon" type="image/png" href="assets/college-logo.png" />
+    <link rel="stylesheet" href="css/login.css?v=4" />
+    <link rel="stylesheet" href="css/ambient.css?v=1" />
+  </head>
+  <body>
+    <div class="ambient-background" aria-hidden="true">
+      <div class="ambient-background__wash"></div>
+      <div class="ambient-background__spotlight"></div>
+      <div class="ambient-background__grain"></div>
+    </div>
+    <header class="banner">
+      <div class="seal"><img src="assets/college-logo.png" alt="College of Engineering Phaltan crest" /></div>
+      <h1>College of Engineering Phaltan — Innovation 2K26</h1>
+    </header>
+
+    <div class="wrap">
+      <main class="card">
+        <form id="loginForm" novalidate>
+          <div class="seg" role="radiogroup" aria-label="Log in as">
+            <label>
+              <input type="radio" name="role" value="admin" />
+              <span>Admin</span>
+            </label>
+            <label>
+              <input type="radio" name="role" value="judge" checked />
+              <span>Judge</span>
+            </label>
+          </div>
+
+          <h2 id="roleHeading">Judge Login</h2>
+
+          <div class="field">
+            <label for="username">Login ID</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter your login ID"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="pw-row">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="pw-toggle"
+                id="pwToggle"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <svg
+                  id="eyeIcon"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="err" id="errMsg" role="alert"></p>
+
+          <button type="submit" class="btn" id="submitBtn">
+            <span class="spin" aria-hidden="true"></span>
+            <span class="btn-label" id="btnLabel">Log in as Judge</span>
+          </button>
+        </form>
+
+        <p class="note">
+          Judge accounts are created by the admin. Forgot your password? Contact
+          the event admin.
+        </p>
+      </main>
+
+      <a class="back" href="https://coephaltan.edu.in/innovation2k26.html">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Back to event
+      </a>
+
+    <script src="js/login.js"></script>
+    <script src="js/cursor-glow.js?v=2"></script>
+  </body>
+</html>

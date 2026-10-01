@@ -1,0 +1,112 @@
+body {
+  position: relative;
+  isolation: isolate;
+  background: #03040a;
+}
+
+body > .ambient-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: paint;
+  background: #03040a;
+}
+
+body > .banner {
+  position: relative;
+  z-index: 1;
+}
+
+body > .wrap,
+body > .back,
+body > #app {
+  position: relative;
+  z-index: 1;
+}
+
+body > #sheetRoot {
+  position: relative;
+  z-index: 2;
+}
+
+.ambient-background__wash {
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(ellipse 52% 48% at 18% 18%, rgba(49, 93, 255, 0.12), transparent 72%),
+    radial-gradient(ellipse 46% 48% at 82% 22%, rgba(139, 92, 246, 0.095), transparent 74%),
+    radial-gradient(ellipse 54% 46% at 64% 88%, rgba(34, 211, 238, 0.07), transparent 72%);
+  animation: ambient-drift 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.ambient-background__spotlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(580px, 96vw);
+  aspect-ratio: 1;
+  opacity: var(--spotlight-strength, 0.26);
+  transform: translate3d(
+      var(--spotlight-x, 50vw),
+      var(--spotlight-y, 50vh),
+      0
+    )
+    translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 46% 44%, rgba(59, 130, 246, 0.2), transparent 68%),
+    radial-gradient(circle at 58% 56%, rgba(139, 92, 246, 0.16), transparent 70%),
+    radial-gradient(circle at 53% 49%, rgba(34, 211, 238, 0.1), transparent 74%);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.ambient-background__spotlight::after {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 220px;
+  aspect-ratio: 1;
+  content: "";
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(125, 211, 252, 0.13),
+    rgba(129, 140, 248, 0.06) 38%,
+    transparent 72%
+  );
+}
+
+.ambient-background__grain {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/grain.svg") repeat;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes ambient-drift {
+  from {
+    transform: translate3d(-1.5%, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, -1.5%, 0) scale(1.04);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .ambient-background__spotlight {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-background__wash {
+    animation: none;
+  }
+
+  .ambient-background__spotlight {
+    display: none;
+  }
+}
