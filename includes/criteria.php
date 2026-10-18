@@ -21,6 +21,9 @@ if (!in_array($method, ['GET', 'POST', 'DELETE'], true)) {
     header('Allow: GET, POST, DELETE');
     criteriaRespond(['error' => 'method_not_allowed'], 405);
 }
+if ($method !== 'GET') {
+    requireApiCsrf();
+}
 
 require_once __DIR__ . '/db.php';
 

@@ -54,13 +54,24 @@
 
     var role = form.querySelector('input[name="role"]:checked').value;
     try {
-      var response = await fetch("includes/login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username, password: password, role: role }),
-      });
-      var result = await response.json();
+      var response;
+      try {
+        response = await fetch("includes/login.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: username, password: password, role: role }),
+        });
+      } catch (error) {
+        throw new Error("Unable to connect to the server. Check your connection and try again.");
+      }
+      var result;
+      try {
+        result = await response.json();
+      } catch (error) {
+        throw new Error("The server returned an invalid response. Please try again.");
+      }
       if (!response.ok) throw new Error(result.error || "Unable to log in.");
+      if (!result.redirect) throw new Error("The server did not provide a login destination.");
       window.location.href = result.redirect;
     } catch (error) {
       submitBtn.disabled = false;

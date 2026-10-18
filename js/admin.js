@@ -59,6 +59,7 @@
           marks: {},
           markingLocked: false,
         };
+        var csrfToken = "";
 
         var ui = {
           tab: "criteria",
@@ -66,15 +67,36 @@
           asJudge: null,
           asCat: "all",
           resCat: "Engineering",
+          loadState: "loading",
+          loadError: "",
         };
 
         async function api(url, options) {
-          var response = await fetch(url, options || {});
+          var response;
+          var requestOptions = Object.assign({}, options || {});
+          if (requestOptions.method && requestOptions.method.toUpperCase() !== "GET" && csrfToken) {
+            requestOptions.headers = Object.assign({}, requestOptions.headers || {}, {
+              "X-CSRF-Token": csrfToken,
+            });
+          }
+          try {
+            response = await fetch(url, requestOptions);
+          } catch (error) {
+            throw new Error("Unable to connect to the server. Check your connection and try again.");
+          }
           if (response.status === 401 || response.status === 403) {
             window.location.href = "../login.html";
             return null;
           }
-          var payload = await response.json();
+          var payload;
+          try {
+            payload = await response.json();
+          } catch (error) {
+            throw new Error("The server returned an invalid response. Please try again.");
+          }
+          if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+            throw new Error("The server returned an invalid response. Please try again.");
+          }
           if (!response.ok) throw new Error(payload.error || "Request failed.");
           return payload;
         }
@@ -82,6 +104,7 @@
         async function loadData() {
           var data = await api("../includes/admin-data.php");
           if (!data) return;
+          csrfToken = data.csrfToken;
           S.criteria = data.criteria.map(function (c) {
             return { id: String(c.id), name: c.name, max: Number(c.max), category: c.category };
           });
@@ -123,14 +146,34 @@
         }
 
         /* ---------- shared helpers ---------- */
-        function toast(msg) {
+        function toast(msg, isError) {
           var t = $("#toast");
           t.textContent = msg;
+          t.classList.toggle("toast--error", Boolean(isError));
+          t.setAttribute("role", isError ? "alert" : "status");
           t.classList.add("show");
           clearTimeout(toast.h);
           toast.h = setTimeout(function () {
             t.classList.remove("show");
-          }, 2200);
+            t.setAttribute("role", "status");
+          }, 3500);
+        }
+        function pageState(title, message, retry) {
+          return (
+            '<section class="page-state' +
+            (retry ? " page-state--error" : "") +
+            '" role="' +
+            (retry ? "alert" : "status") +
+            '"><h2>' +
+            esc(title) +
+            "</h2><p>" +
+            esc(message) +
+            "</p>" +
+            (retry
+              ? '<button class="btn primary" data-a="retry-load">Try again</button>'
+              : "") +
+            "</section>"
+          );
         }
         function openSheet(html, focus) {
           var r = $("#sheetRoot");
@@ -209,7 +252,11 @@
             top +
             nav +
             '<div class="shell"><main class="wrap">' +
-            pages[ui.tab]() +
+            (ui.loadState === "loading"
+              ? pageState("Loading admin data", "Please wait while the latest data is loaded.")
+              : ui.loadState === "error"
+                ? pageState("Could not load admin data", ui.loadError, true)
+                : pages[ui.tab]()) +
             "</main></div>";
         }
 
@@ -292,7 +339,7 @@
               '<div class="field"><label for="cm">Maximum marks</label><input id="cm" name="max" type="number" min="1" max="100" value="' +
               (c ? c.max : 10) +
               '"></div>' +
-              '<p class="err"></p><div class="btns"><button type="button" class="btn ghost" data-a="close-sheet">Cancel</button><button class="btn primary">' +
+              '<p class="err" role="alert" aria-live="polite"></p><div class="btns"><button type="button" class="btn ghost" data-a="close-sheet">Cancel</button><button class="btn primary">' +
               (c ? "Save" : "Add") +
               "</button></div></form>",
             true,
@@ -362,7 +409,7 @@
               '><button type="button" class="pw-toggle" data-a="toggle-judge-password" data-for="jp" aria-label="Show password" aria-pressed="false">' +
               svg("eye", 18) +
               '</button></div></div>' +
-              '<p class="err"></p><div class="btns"><button type="button" class="btn ghost" data-a="close-sheet">Cancel</button><button class="btn primary">' +
+              '<p class="err" role="alert" aria-live="polite"></p><div class="btns"><button type="button" class="btn ghost" data-a="close-sheet">Cancel</button><button class="btn primary">' +
               (j ? "Save" : "Add") +
               "</button></div></form>",
             true,
@@ -454,7 +501,7 @@
               '<div class="field"><label for="tm">Members (one per line)</label><textarea id="tm" name="members">' +
               esc(t ? t.members.join("\n") : "") +
               "</textarea></div>" +
-              '<p class="err"></p><div class="btns"><button type="button" class="btn ghost" data-a="close-sheet">Cancel</button><button class="btn primary">' +
+              '<p class="err" role="alert" aria-live="polite"></p><div class="btns"><button type="button" class="btn ghost" data-a="close-sheet">Cancel</button><button class="btn primary">' +
               (t ? "Save" : "Add") +
               "</button></div></form>",
             true,
@@ -729,6 +776,20 @@
             id = el.dataset.id,
             v = el.dataset.v;
           switch (a) {
+            case "retry-load":
+              ui.loadState = "loading";
+              ui.loadError = "";
+              render();
+              try {
+                await loadData();
+                ui.loadState = "ready";
+                render();
+              } catch (error) {
+                ui.loadState = "error";
+                ui.loadError = error.message;
+                render();
+              }
+              break;
             case "tab":
               ui.tab = el.dataset.t;
               closeSheet();
@@ -736,7 +797,7 @@
                 try {
                   await loadData();
                 } catch (error) {
-                  toast(error.message);
+                  toast(error.message, true);
                 }
               }
               render();
@@ -826,7 +887,7 @@
                 await loadData();
                 render();
               } catch (error) {
-                toast(error.message);
+                toast(error.message, true);
               }
               break;
             case "res-cat":
@@ -837,17 +898,17 @@
               try {
                 await loadData();
                 render();
+                window.print();
               } catch (error) {
-                toast(error.message);
+                toast(error.message, true);
               }
-              window.print();
               break;
             case "refresh-results":
               try {
                 await loadData();
                 render();
               } catch (error) {
-                toast(error.message);
+                toast(error.message, true);
               }
               break;
             case "export":
@@ -856,7 +917,7 @@
                 render();
                 exportResults();
               } catch (error) {
-                toast(error.message);
+                toast(error.message, true);
               }
               break;
             case "toggle-lock":
@@ -869,7 +930,7 @@
                 render();
                 toast(S.markingLocked ? "Marking locked" : "Marking unlocked");
               } catch (error) {
-                toast(error.message);
+                toast(error.message, true);
               }
               break;
             case "do-delete":
@@ -888,7 +949,7 @@
             render();
             toast("Deleted");
           } catch (error) {
-            toast(error.message);
+            toast(error.message, true);
           }
         }
         document.addEventListener("submit", async function (e) {
@@ -982,8 +1043,13 @@
         });
         render();
         loadData()
-          .then(render)
+          .then(function () {
+            ui.loadState = "ready";
+            render();
+          })
           .catch(function (error) {
-            toast(error.message);
+            ui.loadState = "error";
+            ui.loadError = error.message;
+            render();
           });
       })();

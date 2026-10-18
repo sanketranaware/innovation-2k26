@@ -1,8 +1,16 @@
 <?php
 
-$databaseDsn = getenv('DATABASE_DSN') ?: 'mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4';
-$databaseUser = getenv('DATABASE_USER') ?: 'root';
-$databasePassword = getenv('DATABASE_PASSWORD') ?: '';
+$databaseDsn = getenv('DATABASE_DSN');
+$databaseUser = getenv('DATABASE_USER');
+$databasePassword = getenv('DATABASE_PASSWORD');
+
+if ($databaseDsn === false || $databaseDsn === '' || $databaseUser === false || $databaseUser === '' || $databasePassword === false || $databasePassword === '') {
+    error_log('Database connection is not configured. Set DATABASE_DSN, DATABASE_USER, and DATABASE_PASSWORD.');
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => 'database_not_configured']);
+    exit;
+}
 
 try {
     $pdo = new PDO($databaseDsn, $databaseUser, $databasePassword, [

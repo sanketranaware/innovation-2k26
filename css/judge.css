@@ -70,6 +70,12 @@
       button {
         cursor: pointer;
       }
+      button:disabled {
+        cursor: not-allowed;
+      }
+      button:active:not(:disabled) {
+        transform: translateY(1px);
+      }
       :focus-visible {
         outline: 3px solid var(--brand);
         outline-offset: 2px;
@@ -146,11 +152,55 @@
         font: 600 13.5px var(--body);
         color: var(--danger);
       }
+      .tb-btn:hover:not(:disabled),
+      .icon-btn:hover:not(:disabled),
+      .devchip:hover:not(:disabled),
+      .chips button:hover:not(:disabled),
+      .tcard:hover:not(:disabled),
+      .mk:hover:not(:disabled),
+      .btn:hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
 
       .wrap {
         max-width: 640px;
         margin: 0 auto;
         padding: 16px 14px 40px;
+      }
+      .page-state {
+        display: grid;
+        justify-items: center;
+        gap: 10px;
+        max-width: 520px;
+        margin: 12vh auto 0;
+        padding: 28px 22px;
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      .page-state h1 {
+        margin: 0;
+        font: 800 21px/1.25 var(--display);
+      }
+      .page-state p {
+        margin: 0 0 6px;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+      .page-state--error {
+        border-color: var(--danger);
+      }
+      .page-state--error h1 {
+        color: var(--danger);
+      }
+      .page-state .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: min(100%, 240px);
+        text-align: center;
+        text-decoration: none;
       }
       .head h1 {
         font: 800 24px/1.1 var(--display);
@@ -190,7 +240,7 @@
       .devchip[aria-pressed="true"] {
         background: var(--brand);
         border-color: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
       }
 
       /* status card */
@@ -249,6 +299,11 @@
         background: var(--surface);
         font-size: 16px;
       }
+      .search input::placeholder,
+      .field textarea::placeholder {
+        color: var(--muted);
+        opacity: 1;
+      }
       .chips {
         display: flex;
         gap: 8px;
@@ -265,7 +320,7 @@
       .chips button[aria-pressed="true"] {
         background: var(--brand);
         border-color: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
       }
 
       .list {
@@ -327,10 +382,15 @@
       .tcard .tt {
         font-weight: 600;
         font-size: 15.5px;
+        overflow-wrap: anywhere;
       }
       .tcard .sub {
         font-size: 13px;
         color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+      .tcard > span {
+        min-width: 0;
       }
       .tcard .foot {
         margin-top: auto;
@@ -348,6 +408,7 @@
       .info h1 {
         font: 800 21px/1.2 var(--display);
         margin: 6px 0 4px;
+        overflow-wrap: anywhere;
       }
       .info .sub {
         font-size: 13.5px;
@@ -365,11 +426,13 @@
         display: flex;
         align-items: baseline;
         justify-content: space-between;
+        gap: 10px;
         margin-bottom: 10px;
       }
       .crit-h h3 {
         font: 700 16px var(--body);
         margin: 0;
+        overflow-wrap: anywhere;
       }
       .of {
         color: var(--muted);
@@ -395,7 +458,15 @@
       .mk.on {
         background: linear-gradient(135deg, var(--brand), var(--brand-2));
         border-color: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
+      }
+      .mk:disabled {
+        background: var(--surface-2);
+        color: var(--muted);
+      }
+      .mk.on:disabled {
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: var(--brand-ink);
       }
 
       .actionbar {
@@ -438,10 +509,17 @@
       }
       .btn.primary {
         background: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
+      }
+      .btn.ghost {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        color: var(--ink);
       }
       .btn:disabled {
-        opacity: 0.5;
+        background: var(--surface-2);
+        color: var(--muted);
+        cursor: not-allowed;
       }
       .mwrap {
         padding-bottom: 110px;
@@ -468,8 +546,9 @@
 
       .toast {
         position: fixed;
-        left: 50%;
+        left: max(12px, 50%);
         bottom: 92px;
+        max-width: calc(100vw - 24px);
         transform: translate(-50%, 20px);
         z-index: 80;
         background: var(--ink);
@@ -477,6 +556,8 @@
         padding: 11px 17px;
         border-radius: 11px;
         font: 600 14px var(--body);
+        text-align: center;
+        overflow-wrap: anywhere;
         opacity: 0;
         pointer-events: none;
         transition:
@@ -487,9 +568,28 @@
         opacity: 1;
         transform: translate(-50%, 0);
       }
+      .toast--error {
+        background: var(--danger-soft);
+        color: var(--danger);
+        border: 1px solid var(--danger);
+      }
 
       @media (min-width: 640px) {
         .chipgrid {
           grid-template-columns: repeat(var(--n, 6), 1fr);
+        }
+      }
+      @media (max-width: 360px) {
+        .actionbar .in {
+          gap: 8px;
+        }
+        .tot {
+          min-width: 74px;
+        }
+        .tot b {
+          font-size: 26px;
+        }
+        .btn {
+          padding: 0 10px;
         }
       }

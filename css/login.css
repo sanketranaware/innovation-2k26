@@ -213,6 +213,7 @@ h2 {
 }
 .field input::placeholder {
   color: var(--muted);
+  opacity: 1;
 }
 .field input:focus-visible {
   outline: none;
@@ -242,6 +243,10 @@ h2 {
 .pw-toggle:hover {
   background: var(--line);
 }
+.pw-toggle:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
 
 .err {
   display: none;
@@ -251,6 +256,7 @@ h2 {
   padding: 9px 12px;
   border-radius: 10px;
   margin: 2px 0 14px;
+  overflow-wrap: anywhere;
 }
 .err.show {
   display: block;
@@ -283,12 +289,15 @@ h2 {
   opacity: 0.75;
   cursor: default;
 }
+.btn:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
 .spin {
   width: 17px;
   height: 17px;
   border-radius: 50%;
-  border: 2.5px solid rgba(255, 255, 255, 0.45);
-  border-top-color: #fff;
+  border: 2.5px solid rgba(9, 9, 11, 0.28);
+  border-top-color: var(--brand-ink);
   display: none;
   animation: spin 0.7s linear infinite;
 }
@@ -329,6 +338,9 @@ h2 {
   font: 700 14px var(--body);
   text-decoration: none;
 }
+.back:hover {
+  text-decoration: underline;
+}
 .back svg {
   flex: none;
 }
@@ -346,5 +358,19 @@ h2 {
   to {
     transform: none;
     opacity: 1;
+  }
+}
+@media (max-width: 360px) {
+  .banner {
+    padding: 28px 16px 82px;
+  }
+  .banner h1 {
+    font-size: 21px;
+  }
+  .wrap {
+    padding-inline: 12px;
+  }
+  .card {
+    padding-inline: 16px;
   }
 }

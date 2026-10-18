@@ -37,6 +37,7 @@
           marks: {},
           markingLocked: false,
         };
+        var csrfToken = "";
 
         var ui = {
           view: "list",
@@ -44,15 +45,36 @@
           draft: null,
           q: "",
           filter: "all",
+          loadState: "loading",
+          loadError: "",
         };
 
         async function api(url, options) {
-          var response = await fetch(url, options || {});
+          var response;
+          var requestOptions = Object.assign({}, options || {});
+          if (requestOptions.method && requestOptions.method.toUpperCase() !== "GET" && csrfToken) {
+            requestOptions.headers = Object.assign({}, requestOptions.headers || {}, {
+              "X-CSRF-Token": csrfToken,
+            });
+          }
+          try {
+            response = await fetch(url, requestOptions);
+          } catch (error) {
+            throw new Error("Unable to connect to the server. Check your connection and try again.");
+          }
           if (response.status === 401 || response.status === 403) {
             window.location.href = "../login.html";
             return null;
           }
-          var payload = await response.json();
+          var payload;
+          try {
+            payload = await response.json();
+          } catch (error) {
+            throw new Error("The server returned an invalid response. Please try again.");
+          }
+          if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+            throw new Error("The server returned an invalid response. Please try again.");
+          }
           if (!response.ok) {
             var error = new Error(payload.error || "Request failed.");
             error.status = response.status;
@@ -64,6 +86,7 @@
         async function loadData() {
           var data = await api("../includes/judge-data.php");
           if (!data) return;
+          csrfToken = data.csrfToken;
           S.judge = { id: String(data.judge.id), name: data.judge.name };
           S.teams = data.teams.map(function (team) {
             return {
@@ -139,20 +162,34 @@
           }, 0);
         }
 
-        function toast(msg) {
+        function toast(msg, isError) {
           var t = $("#toast");
           t.textContent = msg;
+          t.classList.toggle("toast--error", Boolean(isError));
+          t.setAttribute("role", isError ? "alert" : "status");
           t.classList.add("show");
           clearTimeout(toast.h);
           toast.h = setTimeout(function () {
             t.classList.remove("show");
-          }, 2200);
+            t.setAttribute("role", "status");
+          }, 3500);
         }
 
         /* ---------- render ---------- */
         function render(top) {
-          $("#app").innerHTML =
-            ui.view === "marking" ? markingScreen() : listScreen();
+          if (ui.loadState === "loading") {
+            $("#app").innerHTML =
+              '<main class="wrap"><section class="page-state" role="status"><h1>Loading judge data</h1><p>Please wait while your assigned teams are loaded.</p></section></main>';
+            return;
+          }
+          if (ui.loadState === "error") {
+            $("#app").innerHTML =
+              '<main class="wrap"><section class="page-state page-state--error" role="alert"><h1>Could not load judge data</h1><p>' +
+              esc(ui.loadError) +
+              '</p><button class="btn primary" data-a="retry-load">Try again</button><a class="btn ghost" href="../login.html">Back to login</a></section></main>';
+            return;
+          }
+          $("#app").innerHTML = ui.view === "marking" ? markingScreen() : listScreen();
           if (top) window.scrollTo(0, 0);
           if (ui.view === "marking") refreshTotal();
         }
@@ -398,6 +435,20 @@
             id = el.dataset.id,
             v = el.dataset.v;
           switch (a) {
+            case "retry-load":
+              ui.loadState = "loading";
+              ui.loadError = "";
+              render();
+              try {
+                await loadData();
+                ui.loadState = "ready";
+                render();
+              } catch (error) {
+                ui.loadState = "error";
+                ui.loadError = error.message;
+                render();
+              }
+              break;
             case "logout":
               logout();
               break;
@@ -447,10 +498,18 @@
                 toast("Marks saved for " + t.no);
               } catch (error) {
                 if (error.status === 423) {
-                  await loadData();
-                  render();
+                  try {
+                    await loadData();
+                    ui.loadState = "ready";
+                    render();
+                  } catch (refreshError) {
+                    ui.loadState = "error";
+                    ui.loadError = refreshError.message;
+                    render();
+                    break;
+                  }
                 }
-                toast(error.message);
+                toast(error.message, true);
               }
               break;
           }
@@ -464,10 +523,15 @@
             ui.draft.remarks = e.target.value;
           }
         });
-        $("#app").innerHTML = '<main class="wrap"><p>Loading assigned teams...</p></main>';
+        render();
         loadData()
-          .then(render)
+          .then(function () {
+            ui.loadState = "ready";
+            render();
+          })
           .catch(function (error) {
-            toast(error.message);
+            ui.loadState = "error";
+            ui.loadError = error.message;
+            render();
           });
       })();

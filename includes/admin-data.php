@@ -21,8 +21,12 @@ function adminDataBody(): array
     return $data;
 }
 
+$method = $_SERVER['REQUEST_METHOD'] ?? '';
+if (in_array($method, ['POST', 'DELETE'], true)) {
+    requireApiCsrf();
+}
+
 try {
-    $method = $_SERVER['REQUEST_METHOD'] ?? '';
     if ($method === 'GET') {
         $criteria = $pdo->query('SELECT id, name, max_marks AS `max`, category FROM criteria ORDER BY category, id')->fetchAll();
         $judges = $pdo->query("SELECT id, name, username FROM users WHERE role = 'judge' ORDER BY name, id")->fetchAll();
@@ -55,6 +59,7 @@ try {
             'assignments' => $assignments,
             'marks' => $marks,
             'markingLocked' => (bool) $pdo->query('SELECT marking_locked FROM settings WHERE id = 1')->fetchColumn(),
+            'csrfToken' => $_SESSION['csrf_token'],
         ]);
     }
 

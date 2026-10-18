@@ -204,6 +204,44 @@
       }
       .head .act {
         margin-left: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .head > div:first-child {
+        flex: 1 1 260px;
+        min-width: 0;
+      }
+      .head .act .btn {
+        flex: 0 1 auto;
+      }
+      .page-state {
+        display: grid;
+        justify-items: center;
+        gap: 10px;
+        max-width: 520px;
+        margin: 12vh auto 0;
+        padding: 28px 22px;
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      .page-state h2 {
+        margin: 0;
+        font: 800 20px/1.25 var(--display);
+      }
+      .page-state p {
+        margin: 0 0 6px;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+      .page-state--error {
+        border-color: var(--danger);
+      }
+      .page-state--error h2 {
+        color: var(--danger);
       }
 
       .btn {
@@ -216,6 +254,23 @@
         align-items: center;
         justify-content: center;
         gap: 7px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+      }
+      .btn:hover:not(:disabled),
+      .tb-btn:hover:not(:disabled),
+      .icon-btn:hover:not(:disabled),
+      .pick:hover:not(:disabled),
+      .seg button:hover:not(:disabled),
+      .chip:hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
+      button:active:not(:disabled) {
+        transform: translateY(1px);
+      }
+      button:disabled {
+        cursor: not-allowed;
       }
       .btn.primary {
         background: var(--brand);
@@ -233,7 +288,9 @@
         width: 100%;
       }
       .btn:disabled {
-        opacity: 0.5;
+        background: var(--surface-2);
+        border-color: var(--line);
+        color: var(--muted);
         cursor: not-allowed;
       }
 
@@ -292,6 +349,10 @@
         display: flex;
         gap: 10px;
         align-items: flex-start;
+      }
+      .row > :first-child {
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
       .acts {
         display: flex;
@@ -370,7 +431,7 @@
       .pick[aria-checked="true"] .box {
         background: var(--brand);
         border-color: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
       }
 
       .chips {
@@ -395,7 +456,7 @@
       .chip[aria-pressed="true"] {
         background: var(--brand);
         border-color: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
       }
 
       /* results */
@@ -418,6 +479,10 @@
       .win h3 {
         font: 800 18px/1.2 var(--display);
         margin: 2px 0;
+        overflow-wrap: anywhere;
+      }
+      .win > div {
+        min-width: 0;
       }
       .win .sc {
         margin-left: auto;
@@ -459,7 +524,7 @@
       }
       .rk.r1 {
         background: var(--brand);
-        color: #fff;
+        color: var(--brand-ink);
       }
       .rmid {
         flex: 1;
@@ -471,10 +536,12 @@
         font-weight: 600;
         line-height: 1.3;
         font-size: 14.5px;
+        overflow-wrap: anywhere;
       }
       .rmid small {
         color: var(--muted);
         font-size: 12.5px;
+        overflow-wrap: anywhere;
       }
       .rsc {
         flex: none;
@@ -509,8 +576,9 @@
         background: var(--surface);
         width: 100%;
         max-width: 480px;
-        max-height: 90%;
+        max-height: calc(100% - env(safe-area-inset-top, 0px));
         overflow: auto;
+        overscroll-behavior: contain;
         border-radius: 20px 20px 0 0;
         padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
       }
@@ -545,6 +613,7 @@
       .field input::placeholder,
       .field textarea::placeholder {
         color: var(--muted);
+        opacity: 1;
       }
       .pw-row {
         position: relative;
@@ -578,14 +647,21 @@
         resize: vertical;
       }
       .err {
+        display: none;
+        padding: 9px 11px;
+        border-radius: 9px;
+        background: var(--danger-soft);
         color: var(--danger);
         font-size: 13.5px;
-        min-height: 18px;
+        overflow-wrap: anywhere;
         margin-bottom: 6px;
+      }
+      .err:not(:empty) {
+        display: block;
       }
       .btns {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 9px;
         margin-top: 4px;
       }
@@ -601,8 +677,9 @@
 
       .toast {
         position: fixed;
-        left: 50%;
+        left: max(12px, 50%);
         bottom: 92px;
+        max-width: calc(100vw - 24px);
         transform: translate(-50%, 20px);
         z-index: 80;
         background: var(--ink);
@@ -610,6 +687,8 @@
         padding: 11px 17px;
         border-radius: 11px;
         font: 600 14px var(--body);
+        text-align: center;
+        overflow-wrap: anywhere;
         opacity: 0;
         pointer-events: none;
         transition:
@@ -619,6 +698,11 @@
       .toast.show {
         opacity: 1;
         transform: translate(-50%, 0);
+      }
+      .toast--error {
+        background: var(--danger-soft);
+        color: var(--danger);
+        border: 1px solid var(--danger);
       }
 
       @media (min-width: 768px) {
@@ -642,5 +726,65 @@
         }
         .list.grid2 {
           grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 480px) {
+        .head {
+          align-items: stretch;
+        }
+        .head .act {
+          width: 100%;
+          margin-left: 0;
+          justify-content: flex-start;
+        }
+        .head .act .btn {
+          flex: 1 1 calc(50% - 8px);
+        }
+        .row {
+          gap: 4px;
+        }
+        .acts {
+          margin: -4px -4px 0 0;
+        }
+        .icon-btn {
+          width: 36px;
+          height: 40px;
+        }
+        .btns {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media print {
+        body,
+        .card,
+        .win,
+        .rrow {
+          background: #fff !important;
+          color: #111 !important;
+        }
+        body > .ambient-background,
+        .topbar,
+        .nav,
+        .head .act,
+        .seg,
+        .toast {
+          display: none !important;
+        }
+        .shell {
+          margin: 0 !important;
+        }
+        .wrap {
+          max-width: none;
+          padding: 0;
+        }
+        .card,
+        .win {
+          border-color: #999 !important;
+          break-inside: avoid;
+        }
+        .rmid small,
+        .rsc small,
+        .rdetail {
+          color: #333 !important;
         }
       }

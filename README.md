@@ -60,15 +60,25 @@ git clone https://github.com/<your-username>/innovation2k26-judging.git
 
 # 4. Create the database and import /database/schema.sql
 #    Create a database named `innovation2k26` in phpMyAdmin, then import the schema.
+#    Create a dedicated MySQL account for the app; do not use MySQL root.
 
-# 5. Create the first administrator from a terminal in the project folder
+# 5. Configure DATABASE_DSN, DATABASE_USER, and DATABASE_PASSWORD in Apache's
+#    environment (for XAMPP, configure SetEnv in Apache config and restart it).
+#    Example DSN: mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4
+
+# 6. Create the first administrator from a terminal in the project folder.
+#    Set the same three DATABASE_* variables in this terminal first.
 C:\xampp\php\php.exe database\create-admin.php
 
-# 6. Open in browser
+# 7. Open in browser
 http://localhost/innovation2k26-judging
 ```
 
 The bootstrap script asks for the administrator name, login ID, and password. No demo accounts or sample judging records are created. Add judges, teams, and criteria from the admin panel after signing in.
+
+Apache's included `.htaccess` routes unknown project URLs to a branded 404 page. The admin and judge panels also show a retry option if their initial API request fails; make sure Apache's `mod_rewrite` module and `.htaccess` overrides are enabled.
+
+For deployment, serve the site only over HTTPS, use a dedicated least-privilege database account, keep database credentials outside the web root, keep PHP/Apache/MySQL updated, and restrict access to the server and database. The application refuses to connect if database credentials are not explicitly configured. Never publish credentials or expose phpMyAdmin to the public internet.
 
 ## Project Structure
 ```

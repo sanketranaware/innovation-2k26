@@ -14,6 +14,9 @@ function judgeDataRespond(array $payload, int $status = 200): void
 
 try {
     $method = $_SERVER['REQUEST_METHOD'] ?? '';
+    if ($method === 'POST') {
+        requireApiCsrf();
+    }
     $judgeId = (int) $_SESSION['user_id'];
 
     if ($method === 'GET') {
@@ -51,6 +54,7 @@ try {
             'criteria' => $criteria,
             'marks' => $marks,
             'markingLocked' => $markingLocked,
+            'csrfToken' => $_SESSION['csrf_token'],
         ]);
     }
 

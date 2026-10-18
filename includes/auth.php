@@ -13,12 +13,33 @@
 
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_secure', !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off' ? '1' : '0');
     session_set_cookie_params([
         'httponly' => true,
         'secure' => !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off',
         'samesite' => 'Lax',
     ]);
     session_start();
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+function requireApiCsrf(): void
+{
+    $providedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    $expectedToken = $_SESSION['csrf_token'] ?? '';
+
+    if (!is_string($providedToken) || !is_string($expectedToken) || $expectedToken === '' || !hash_equals($expectedToken, $providedToken)) {
+        http_response_code(403);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'csrf_validation_failed']);
+        exit;
+    }
 }
 
 function appBasePath(): string
@@ -63,6 +84,10 @@ function requireRole(string $role): void
 function requireApiRole(string $role): void
 {
     header('Content-Type: application/json');
+    header('Cache-Control: no-store, private');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: same-origin');
+    header('X-Frame-Options: DENY');
 
     if (empty($_SESSION['user_id']) || empty($_SESSION['role'])) {
         http_response_code(401); // not logged in at all
