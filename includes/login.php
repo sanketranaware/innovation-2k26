@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -26,10 +26,18 @@ if ($username === '' || $password === '' || !in_array($role, ['admin', 'judge'],
     exit;
 }
 
-require_once __DIR__ . '/db.php';
-$stmt = $pdo->prepare('SELECT id, name, username, password_hash, role FROM users WHERE username = ? LIMIT 1');
-$stmt->execute([$username]);
-$user = $stmt->fetch();
+require_once __DIR__ . '/../includes/db.php';
+
+try {
+    $stmt = $pdo->prepare('SELECT id, name, username, password_hash, role FROM users WHERE username = ? LIMIT 1');
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
+} catch (Throwable $exception) {
+    error_log('Login lookup failed: ' . $exception->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'server_error']);
+    exit;
+}
 
 if (!$user || $user['role'] !== $role || !password_verify($password, $user['password_hash'])) {
     http_response_code(401);

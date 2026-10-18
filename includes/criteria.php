@@ -4,7 +4,7 @@
  * GET lists criteria; POST creates or updates; DELETE removes a criterion.
  */
 
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 requireApiRole('admin');
 
 header('Content-Type: application/json; charset=utf-8');
@@ -25,7 +25,7 @@ if ($method !== 'GET') {
     requireApiCsrf();
 }
 
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../includes/db.php';
 
 try {
     if ($method === 'GET') {
@@ -112,7 +112,7 @@ try {
 
     criteriaRespond(['success' => true]);
 } catch (Throwable $exception) {
-    if ($pdo->inTransaction()) {
+    if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
     error_log('Criteria API failed: ' . $exception->getMessage());

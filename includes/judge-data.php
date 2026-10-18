@@ -1,9 +1,8 @@
 <?php
 
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 requireApiRole('judge');
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/db.php';
 
 function judgeDataRespond(array $payload, int $status = 200): void
 {
@@ -17,6 +16,7 @@ try {
     if ($method === 'POST') {
         requireApiCsrf();
     }
+    require_once __DIR__ . '/../includes/db.php';
     $judgeId = (int) $_SESSION['user_id'];
 
     if ($method === 'GET') {
@@ -113,7 +113,7 @@ try {
     header('Allow: GET, POST');
     judgeDataRespond(['error' => 'method_not_allowed'], 405);
 } catch (Throwable $exception) {
-    if ($pdo->inTransaction()) {
+    if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
     error_log('Judge data API failed: ' . $exception->getMessage());

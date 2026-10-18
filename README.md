@@ -63,11 +63,20 @@ git clone https://github.com/<your-username>/innovation2k26-judging.git
 #    Create a dedicated MySQL account for the app; do not use MySQL root.
 
 # 5. Configure DATABASE_DSN, DATABASE_USER, and DATABASE_PASSWORD in Apache's
-#    environment (for XAMPP, configure SetEnv in Apache config and restart it).
+#    environment (for XAMPP, put SetEnv directives in Apache's vhost config and
+#    restart it). Use the app account created in step 4.
 #    Example DSN: mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4
+#
+#    Inside the project's <VirtualHost> in Apache's httpd-vhosts.conf:
+#    SetEnv DATABASE_DSN "mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4"
+#    SetEnv DATABASE_USER "innovation_app"
+#    SetEnv DATABASE_PASSWORD "replace-with-a-unique-secret"
 
 # 6. Create the first administrator from a terminal in the project folder.
-#    Set the same three DATABASE_* variables in this terminal first.
+#    In PowerShell, set the same variables for this command:
+#    $env:DATABASE_DSN = "mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4"
+#    $env:DATABASE_USER = "innovation_app"
+#    $env:DATABASE_PASSWORD = "replace-with-a-unique-secret"
 C:\xampp\php\php.exe database\create-admin.php
 
 # 7. Open in browser
@@ -78,7 +87,13 @@ The bootstrap script asks for the administrator name, login ID, and password. No
 
 Apache's included `.htaccess` routes unknown project URLs to a branded 404 page. The admin and judge panels also show a retry option if their initial API request fails; make sure Apache's `mod_rewrite` module and `.htaccess` overrides are enabled.
 
-For deployment, serve the site only over HTTPS, use a dedicated least-privilege database account, keep database credentials outside the web root, keep PHP/Apache/MySQL updated, and restrict access to the server and database. The application refuses to connect if database credentials are not explicitly configured. Never publish credentials or expose phpMyAdmin to the public internet.
+Create the database account with only the permissions the application needs (set a unique password outside source control):
+```sql
+CREATE USER 'innovation_app'@'localhost' IDENTIFIED BY 'replace-with-a-unique-secret';
+GRANT SELECT, INSERT, UPDATE, DELETE ON innovation2k26.* TO 'innovation_app'@'localhost';
+```
+
+For deployment, serve the site only over HTTPS, keep database credentials in the Apache/PHP environment outside the web root, keep PHP/Apache/MySQL updated, and restrict access to the server and database. The application refuses to connect if database credentials are not explicitly configured. Never publish credentials or expose phpMyAdmin to the public internet.
 
 ## Project Structure
 ```

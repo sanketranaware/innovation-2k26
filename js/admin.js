@@ -405,7 +405,7 @@
               '<div class="field"><label for="jp">Password' +
               (j ? ' <span class="sub">Leave blank to keep the current password.</span>' : "") +
               '</label><div class="pw-row"><input id="jp" name="password" type="password" autocomplete="new-password" ' +
-              (j ? 'placeholder="Leave blank to keep current password"' : 'placeholder="Enter a secure password" required') +
+              (j ? 'placeholder="Leave blank to keep current password" minlength="12"' : 'placeholder="At least 12 characters" minlength="12" required') +
               '><button type="button" class="pw-toggle" data-a="toggle-judge-password" data-for="jp" aria-label="Show password" aria-pressed="false">' +
               svg("eye", 18) +
               '</button></div></div>' +
@@ -989,6 +989,7 @@
               un = (fd.username || "").trim(),
               pw = (fd.password || "").trim();
             if (!name2 || !un || (!id && !pw)) return err("Fill in all required fields.");
+            if (pw && pw.length < 12) return err("Passwords must be at least 12 characters.");
             try {
               await api("../includes/admin-data.php", jsonOptions("POST", {
                 action: "save-judge",

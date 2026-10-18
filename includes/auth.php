@@ -5,21 +5,20 @@
  *   requireRole()    -> for normal pages (redirects to login.html)
  *   requireApiRole() -> for api/*.php files (returns JSON + 401/403, no redirect)
  *
- * Expects login.php to have already set, on successful login:
- *   $_SESSION['user_id']   -> the logged-in user's id from the `users` table
- *   $_SESSION['user_name'] -> their display name
- *   $_SESSION['role']      -> 'admin' or 'judge'
+ * login.php sets on successful login:
+ *   $_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['role']
  */
 
 if (session_status() === PHP_SESSION_NONE) {
+    $isHttps = !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off';
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     ini_set('session.cookie_httponly', '1');
     ini_set('session.cookie_samesite', 'Lax');
-    ini_set('session.cookie_secure', !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off' ? '1' : '0');
+    ini_set('session.cookie_secure', $isHttps ? '1' : '0');
     session_set_cookie_params([
         'httponly' => true,
-        'secure' => !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off',
+        'secure' => $isHttps,
         'samesite' => 'Lax',
     ]);
     session_start();
@@ -58,8 +57,7 @@ function appBasePath(): string
 }
 
 /**
- * Use on normal .php pages (e.g. judge/my-team.php).
- * Sends the browser to the login page if not logged in / wrong role.
+ * Use on normal .php pages. Redirects to the login page if not logged in / wrong role.
  */
 function requireRole(string $role): void
 {
@@ -75,11 +73,7 @@ function requireRole(string $role): void
 }
 
 /**
- * Use on api/*.php files only. A fetch() request can't "follow" a redirect
- * the way a browser navigation can, so instead of header('Location: ...'),
- * this just replies with a JSON error and an HTTP status code. Your JS
- * fetch() calls should check for this and send the user to login.html
- * themselves when it happens (see js/admin.js / js/judge.js changes).
+ * Use on api/*.php files only. Replies with JSON + HTTP status instead of redirecting.
  */
 function requireApiRole(string $role): void
 {
@@ -90,13 +84,13 @@ function requireApiRole(string $role): void
     header('X-Frame-Options: DENY');
 
     if (empty($_SESSION['user_id']) || empty($_SESSION['role'])) {
-        http_response_code(401); // not logged in at all
+        http_response_code(401);
         echo json_encode(['error' => 'not_logged_in']);
         exit;
     }
 
     if ($_SESSION['role'] !== $role) {
-        http_response_code(403); // logged in, but as the wrong role
+        http_response_code(403);
         echo json_encode(['error' => 'wrong_role']);
         exit;
     }

@@ -5,6 +5,9 @@ Options -Indexes
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "same-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
 </IfModule>
 
 <FilesMatch "(?i)^(?:\.|.*\.(?:sql|log|bak|ini|conf|env)|(?:db|auth)\.php)$">

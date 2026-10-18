@@ -43,7 +43,7 @@ $safeBasePath = htmlspecialchars($basePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'
       <p class="message"><?= htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
       <div class="actions">
         <a class="button button-primary" href="<?= $safeBasePath ?>/login.html">Go to sign in</a>
-        <button class="button button-secondary" type="button" onclick="window.location.reload()">Try again</button>
+        <a class="button button-secondary" href="">Try again</a>
       </div>
     </main>
   </body>

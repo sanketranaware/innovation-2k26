@@ -1,7 +1,6 @@
 <?php
 
-require_once __DIR__ . '/auth.php';
-requireApiCsrf();
+require_once __DIR__ . '/../includes/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -10,6 +9,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     echo json_encode(['error' => 'method_not_allowed']);
     exit;
 }
+
+requireApiCsrf();
 
 $_SESSION = [];
 if (ini_get('session.use_cookies')) {

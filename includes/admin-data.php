@@ -1,9 +1,8 @@
 <?php
 
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 requireApiRole('admin');
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/db.php';
 
 function adminDataRespond(array $payload, int $status = 200): void
 {
@@ -25,6 +24,8 @@ $method = $_SERVER['REQUEST_METHOD'] ?? '';
 if (in_array($method, ['POST', 'DELETE'], true)) {
     requireApiCsrf();
 }
+
+require_once __DIR__ . '/../includes/db.php';
 
 try {
     if ($method === 'GET') {
@@ -72,7 +73,8 @@ try {
                 adminDataRespond(['error' => 'Invalid lock state.'], 422);
             }
             $stmt = $pdo->prepare('UPDATE settings SET marking_locked = ? WHERE id = 1');
-            $stmt->execute([$data['locked']]);
+            // FIX: PHP false becomes '' in PDO and MySQL rejects it, so send 1/0
+            $stmt->execute([$data['locked'] ? 1 : 0]);
             adminDataRespond(['success' => true, 'markingLocked' => $data['locked']]);
         }
 
@@ -83,6 +85,9 @@ try {
             $password = (string) ($data['password'] ?? '');
             if ($name === '' || $username === '' || ($id === null && $password === '')) {
                 adminDataRespond(['error' => 'Name, username, and a password for new judges are required.'], 422);
+            }
+            if (($id === null || $password !== '') && strlen($password) < 12) {
+                adminDataRespond(['error' => 'Passwords must be at least 12 characters.'], 422);
             }
             if ($id === null) {
                 $stmt = $pdo->prepare("INSERT INTO users (name, username, password_hash, role) VALUES (?, ?, ?, 'judge')");
@@ -155,8 +160,13 @@ try {
             if ($assigned) {
                 $stmt = $pdo->prepare("INSERT INTO assignments (judge_id, team_id) SELECT u.id, t.id FROM users u CROSS JOIN teams t WHERE u.id = ? AND u.role = 'judge' AND t.id = ? ON DUPLICATE KEY UPDATE team_id = VALUES(team_id)");
                 $stmt->execute([$judgeId, $teamId]);
+                // FIX: rowCount() is 0 when the assignment already exists, so verify before returning 404
                 if ($stmt->rowCount() === 0) {
-                    adminDataRespond(['error' => 'Judge or team not found.'], 404);
+                    $check = $pdo->prepare("SELECT 1 FROM users u JOIN teams t ON t.id = ? WHERE u.id = ? AND u.role = 'judge'");
+                    $check->execute([$teamId, $judgeId]);
+                    if (!$check->fetchColumn()) {
+                        adminDataRespond(['error' => 'Judge or team not found.'], 404);
+                    }
                 }
             } else {
                 $stmt = $pdo->prepare('DELETE FROM assignments WHERE judge_id = ? AND team_id = ?');
