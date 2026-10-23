@@ -154,7 +154,6 @@
       }
       .tb-btn:hover:not(:disabled),
       .icon-btn:hover:not(:disabled),
-      .devchip:hover:not(:disabled),
       .chips button:hover:not(:disabled),
       .tcard:hover:not(:disabled),
       .mk:hover:not(:disabled),
@@ -213,35 +212,7 @@
         font-size: 14px;
       }
 
-      /* demo-only judge switcher */
-      .devbar {
-        background: var(--surface-2);
-        border-bottom: 1px solid var(--line);
-        padding: 8px 14px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        overflow-x: auto;
-      }
-      .devbar span {
-        font: 600 12px var(--body);
-        color: var(--muted);
-        flex: none;
-      }
-      .devchip {
-        flex: none;
-        min-height: 34px;
-        padding: 0 12px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: var(--surface);
-        font: 600 12.5px var(--body);
-      }
-      .devchip[aria-pressed="true"] {
-        background: var(--brand);
-        border-color: var(--brand);
-        color: var(--brand-ink);
-      }
+
 
       /* status card */
       .status {

@@ -66,15 +66,15 @@ try {
             }
 
             $pdo->beginTransaction();
-            $stmt = $pdo->prepare('UPDATE criteria SET name = ?, max_marks = ?, category = ? WHERE id = ?');
-            $stmt->execute([$name, $max, $category, $id]);
-
             $stmt = $pdo->prepare('SELECT id FROM criteria WHERE id = ?');
             $stmt->execute([$id]);
             if (!$stmt->fetchColumn()) {
                 $pdo->rollBack();
                 criteriaRespond(['error' => 'Criterion not found.'], 404);
             }
+
+            $stmt = $pdo->prepare('UPDATE criteria SET name = ?, max_marks = ?, category = ? WHERE id = ?');
+            $stmt->execute([$name, $max, $category, $id]);
 
             $stmt = $pdo->prepare('UPDATE marks SET score = ? WHERE criterion_id = ? AND score > ?');
             $stmt->execute([$max, $id, $max]);
