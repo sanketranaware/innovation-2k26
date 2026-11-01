@@ -1,26 +1,26 @@
 # Innovation 2K26 — Judging & Result Management System
 
-A web-based judging and result management system built for **Innovation 2K26**, an innovation project competition hosted by the College of Engineering, Phaltan. It replaces manual, paper-based judging with a digital workflow for criteria setup, judge assignment, mark entry, and automatic rank-wise result generation — built to handle ~1000 participating teams in one Hackathon category.
+A web-based judging and result management system built for **Innovation 2K26**, an innovation project competition hosted by the College of Engineering, Phaltan. It replaces manual, paper-based judging with a digital workflow for criteria setup, judge assignment, mark entry, and automatic rank-wise result generation — built to handle ~1000 participating teams across Engineering and Polytechnic categories.
 
 🔗 Event page: [coephaltan.edu.in/innovation2k26.html](https://www.coephaltan.edu.in/innovation2k26.html)
 
 ## Problem
 
-Manually scoring and ranking ~1000 teams with multiple judges is slow and error-prone. Paper-based totals are hard to verify, results are delayed, and there's no easy way to filter which teams a specific judge is responsible for.
+Manually scoring and ranking ~1000 teams across two categories, with multiple judges, is slow and error-prone. Paper-based totals are hard to verify, results are delayed, and there's no easy way to filter which teams a specific judge is responsible for.
 
 ## Solution
 
-A two-role system — **Admin** and **Judge** — with no separate portal for participants. Admin sets up criteria and teams and assigns judges; judges mark only their assigned teams; totals and rankings are calculated automatically.
+A two-role system — **Admin** and **Judge** — with no separate portal for participants. Admin sets up criteria and teams and assigns judges; judges mark only their assigned teams; totals and rankings are calculated automatically, per category.
 
 ## Features
 
 **Admin panel**
 - Secure login
-- Criteria management (add / edit / delete, max marks per criterion)
+- Criteria management, separate sets for Engineering and Polytechnic (add / edit / delete, max marks per criterion)
 - Judge management (create / edit / delete judge login credentials)
-- Team management (add / edit / delete team details — number, title, college, members)
+- Team management (add / edit / delete team details — number, title, category, college, members)
 - Assign specific teams to specific judges
-- Auto-calculated, rank-wise results with print and CSV export
+- Auto-calculated, rank-wise, category-wise results with print and CSV export
 - Lock marking to freeze scores once judging ends
 
 **Judge panel**
@@ -114,8 +114,8 @@ innovation2k26-judging/
 | Table | Purpose |
 |---|---|
 | `users` | Admin and judge login credentials |
-| `criteria` | Marking fields with max marks |
-| `teams` | Team details (number, title, college, members) |
+| `criteria` | Marking fields with max marks, tagged by category |
+| `teams` | Team details (number, title, category, college, members) |
 | `assignments` | Which judge is assigned to which team |
 | `marks` | Marks a judge gave a team, per criterion |
 | `mark_sheets` | Submitted marks and remarks for each assigned team |
@@ -126,7 +126,7 @@ innovation2k26-judging/
 - [x] Frontend UI (admin + judge panels)
 - [x] PHP + MySQL backend integration
 - [x] Login/session system
-- [x] Auto-calculated results
+- [x] Auto-calculated, category-wise results
 - [x] Print and CSV result export
 - [x] Marking lock
 - [ ] CSV import for bulk team upload

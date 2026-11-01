@@ -14,7 +14,7 @@
             }[c];
           });
         };
-        var CATS = ["Hackathon"];
+        var CATS = ["Engineering", "Polytechnic"];
 
         var ic = {
           criteria:
@@ -63,10 +63,10 @@
 
         var ui = {
           tab: "criteria",
-          critCat: "Hackathon",
+          critCat: "Engineering",
           asJudge: null,
           asCat: "all",
-          resCat: "Hackathon",
+          resCat: "Engineering",
           loadState: "loading",
           loadError: "",
         };
@@ -207,7 +207,7 @@
         var catPill = function (c) {
           return (
             '<span class="pill ' +
-            "hackathon" +
+            (c === "Engineering" ? "eng" : "pol") +
             '">' +
             esc(c) +
             "</span>"
@@ -287,7 +287,7 @@
             })
             .join("");
           return (
-            '<div class="head"><div><h1>Criteria</h1><p>Marking fields for the Hackathon. Full marks per judge: ' +
+            '<div class="head"><div><h1>Criteria</h1><p>Separate marking fields for each category. Full marks per judge: ' +
             list.reduce(function (a, c) {
               return a + c.max;
             }, 0) +
@@ -422,7 +422,7 @@
             .map(function (t) {
               return (
                 '<div class="card row"><div style="flex:1"><div class="pill ' +
-                "hackathon" +
+                (t.category === "Engineering" ? "eng" : "pol") +
                 '" style="margin-bottom:6px">' +
                 esc(t.category) +
                 "</div><b>" +
@@ -464,7 +464,7 @@
                   return x.id === id;
                 })
               : null,
-            cat = t ? t.category : "Hackathon";
+            cat = t ? t.category : "Engineering";
           openSheet(
             "<h2>" +
               (t ? "Edit team" : "Add team") +
@@ -552,7 +552,7 @@
                 '"><span class="box">' +
                 svg("check", 16) +
                 '</span><span style="flex:1;text-align:left"><span class="pill ' +
-                "hackathon" +
+                (t.category === "Engineering" ? "eng" : "pol") +
                 '" style="margin-right:6px">' +
                 t.category +
                 '</span><b style="font-size:14.5px">' +
@@ -571,7 +571,8 @@
             '<div class="seg" style="margin-top:10px">' +
             [
               ["all", "All"],
-              ["Hackathon", "Hackathon"],
+              ["Engineering", "Engineering"],
+              ["Polytechnic", "Polytechnic"],
             ]
               .map(function (c) {
                 return (

@@ -1,6 +1,6 @@
 <?php
 
-$databaseDsn = getenv('DATABASE_DSN') ?: 'mysql:host=localhost;dbname=hackthon2k26;charset=utf8mb4';
+$databaseDsn = getenv('DATABASE_DSN') ?: 'mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4';
 $databaseUser = getenv('DATABASE_USER') ?: 'root';
 $databasePassword = getenv('DATABASE_PASSWORD') ?: '';
 

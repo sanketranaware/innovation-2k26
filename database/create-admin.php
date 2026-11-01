@@ -1,5 +1,5 @@
 <?php
-// Run from a terminal only:  php database/create-admin.php
+// Run from a terminal only:  php scripts/create-admin.php
 
 if (PHP_SAPI !== 'cli') {
     http_response_code(404);

@@ -228,7 +228,7 @@
                     t.id +
                     '">' +
                     '<span><span class="pill ' +
-                    "hackathon" +
+                    (t.category === "Engineering" ? "eng" : "pol") +
                     '" style="margin-right:6px">' +
                     t.category +
                     "</span><b>" +
@@ -361,7 +361,7 @@
             esc(t.no) +
             "</b><span>Marking sheet</span></div></header>" +
             '<main class="wrap mwrap"><div class="info"><span class="pill ' +
-            "hackathon" +
+            (t.category === "Engineering" ? "eng" : "pol") +
             '">' +
             t.category +
             "</span><h1>" +
