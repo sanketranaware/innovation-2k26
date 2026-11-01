@@ -122,7 +122,7 @@ try {
             $category = $data['category'] ?? '';
             $college = trim((string) ($data['college'] ?? ''));
             $members = $data['members'] ?? null;
-            if ($teamNo === '' || $title === '' || $college === '' || !in_array($category, ['Engineering', 'Polytechnic'], true) || !is_array($members) || count($members) < 1 || count($members) > 4) {
+            if ($teamNo === '' || $title === '' || $college === '' || $category !== 'Hackathon' || !is_array($members) || count($members) < 1 || count($members) > 4) {
                 adminDataRespond(['error' => 'Enter valid team details and between 1 and 4 members.'], 422);
             }
             foreach ($members as $member) {

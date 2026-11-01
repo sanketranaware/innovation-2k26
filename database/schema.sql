@@ -13,7 +13,7 @@ CREATE TABLE criteria (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(120) NOT NULL,
     max_marks TINYINT UNSIGNED NOT NULL,
-    category ENUM('Engineering', 'Polytechnic') NOT NULL,
+    category ENUM('Hackathon') NOT NULL,
     PRIMARY KEY (id),
     KEY criteria_category_index (category)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -32,7 +32,7 @@ CREATE TABLE teams (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     team_no VARCHAR(20) NOT NULL,
     title VARCHAR(200) NOT NULL,
-    category ENUM('Engineering', 'Polytechnic') NOT NULL,
+    category ENUM('Hackathon') NOT NULL,
     college VARCHAR(200) NOT NULL,
     members JSON NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

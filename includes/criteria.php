@@ -54,8 +54,8 @@ try {
         if ($max === false || $max < 1 || $max > 100) {
             criteriaRespond(['error' => 'Maximum marks must be between 1 and 100.'], 422);
         }
-        if (!in_array($category, ['Engineering', 'Polytechnic'], true)) {
-            criteriaRespond(['error' => 'Category must be Engineering or Polytechnic.'], 422);
+        if ($category !== 'Hackathon') {
+            criteriaRespond(['error' => 'Category must be Hackathon.'], 422);
         }
 
         $id = $data['id'] ?? null;
