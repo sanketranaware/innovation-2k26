@@ -1,0 +1,49 @@
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build and test output
+/build/
+/dist/
+/coverage/
+.phpunit.result.cache
+
+# Runtime files and logs
+*.log
+/logs/
+/tmp/
+/uploads/
+*.cache
+*.tmp
+*.temp
+
+# Database exports and local data
+*.sql.gz
+*.dump
+*.bak
+/database/backups/
+/database/*.sqlite
+/database/*.sqlite3
+
+# XAMPP and local server files
+php_errorlog
+error_log
+*.pid
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor and IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.code-workspace

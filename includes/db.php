@@ -1,8 +1,8 @@
 <?php
 
-$databaseDsn = getenv('DATABASE_DSN') ?: 'mysql:host=localhost;dbname=innovation2k26;charset=utf8mb4';
-$databaseUser = getenv('DATABASE_USER') ?: 'root';
-$databasePassword = getenv('DATABASE_PASSWORD') ?: '';
+$databaseDsn = getenv('DATABASE_DSN') ?: 'mysql:host=localhost;dbname=coephalt1_innovation;charset=utf8mb4';
+$databaseUser = getenv('DATABASE_USER') ?: 'coephalt1_innovation-2k26';
+$databasePassword = getenv('DATABASE_PASSWORD') ?: 'Innovation@2k26';
 
 try {
     $pdo = new PDO($databaseDsn, $databaseUser, $databasePassword, [
